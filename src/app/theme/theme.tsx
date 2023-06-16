@@ -7,7 +7,10 @@ function ThemeStyle({ children }: { children: React.ReactNode }) {
     palette: {
       mode: "light",
       primary: {
-        main: "#6636D7" // Altere para a cor desejada para o tema primário
+        main: "#6636d7",
+        light: "#ff9999",
+        dark: "#990000",
+        contrastText: "#ffffff"
       }
     }
   });
