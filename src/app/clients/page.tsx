@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from "react";
 
+import SearchBar from "../components/search-bar";
 import TableInfo from "../components/table-info";
 
 import { ClientData } from "@/interfaces/types";
@@ -22,26 +23,30 @@ function Clients() {
   }, []);
 
   return (
-    <Box
-      sx={{
-        display: "flex",
-        justifyContent: "center"
-      }}
-    >
-      <TableInfo
-        headers={[
-          "ID",
-          "Número Documento",
-          "Tipo Documento",
-          "Nome",
-          "Logradouro",
-          "Número",
-          "Bairro",
-          "Cidade",
-          "UF"
-        ]}
-        data={clients}
-      />
+    <Box>
+      <SearchBar />
+
+      <Box
+        sx={{
+          display: "flex",
+          justifyContent: "center"
+        }}
+      >
+        <TableInfo
+          headers={[
+            "ID",
+            "Número Documento",
+            "Tipo Documento",
+            "Nome",
+            "Logradouro",
+            "Número",
+            "Bairro",
+            "Cidade",
+            "UF"
+          ]}
+          data={clients}
+        />
+      </Box>
     </Box>
   );
 }

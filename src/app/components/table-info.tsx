@@ -1,5 +1,3 @@
-"use client";
-
 import {
   ClientData,
   ConductorData,
@@ -29,7 +27,6 @@ function TableInfo({ headers, data }: TableInfoProps) {
       </TableHead>
       <TableBody>
         {data.map((item, index) => {
-          console.log(item);
           return (
             <TableRow key={index} className="MuiTableRow-hover">
               {Object.values(item).map((value, index) => (
