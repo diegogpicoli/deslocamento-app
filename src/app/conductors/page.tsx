@@ -2,11 +2,20 @@
 
 import { useEffect, useState } from "react";
 
+import SearchBar from "../components/search-bar";
 import TableInfo from "../components/table-info";
 
 import { ConductorData } from "@/interfaces/types";
 import fetchApi from "@/utils/api";
 import { Box } from "@mui/material";
+
+const filtros = [
+  "ID",
+  "Nome",
+  "Número Habilitação",
+  "Categoria Habilitação",
+  "Vencimento Habilitação"
+];
 
 function Conductors() {
   const [conductors, setConductors] = useState<ConductorData[]>([]);
@@ -21,22 +30,16 @@ function Conductors() {
     fetchData();
   }, []);
   return (
-    <Box
-      sx={{
-        display: "flex",
-        justifyContent: "center"
-      }}
-    >
-      <TableInfo
-        headers={[
-          "ID",
-          "Nome",
-          "Número Habilitação",
-          "Categoria Habilitação",
-          "Vencimento Habilitação"
-        ]}
-        data={conductors}
-      />
+    <Box>
+      <SearchBar filtros={filtros} />
+      <Box
+        sx={{
+          display: "flex",
+          justifyContent: "center"
+        }}
+      >
+        <TableInfo headers={filtros} data={conductors} />
+      </Box>
     </Box>
   );
 }

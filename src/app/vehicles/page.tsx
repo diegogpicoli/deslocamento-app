@@ -2,11 +2,14 @@
 
 import { useEffect, useState } from "react";
 
+import SearchBar from "../components/search-bar";
 import TableInfo from "../components/table-info";
 
 import { VehiclesData } from "@/interfaces/types";
 import fetchApi from "@/utils/api";
 import { Box } from "@mui/material";
+
+const headers = ["ID", "Placa", "Modelo", "Fabricação", "Quilometragem Atual"];
 
 function Vehicles() {
   const [vehicles, setVehicles] = useState<VehiclesData[]>([]);
@@ -22,16 +25,16 @@ function Vehicles() {
   }, []);
 
   return (
-    <Box
-      sx={{
-        display: "flex",
-        justifyContent: "center"
-      }}
-    >
-      <TableInfo
-        headers={["ID", "Placa", "Modelo", "Fabricação", "Quilometragem Atual"]}
-        data={vehicles}
-      />
+    <Box>
+      <SearchBar filtros={headers} />
+      <Box
+        sx={{
+          display: "flex",
+          justifyContent: "center"
+        }}
+      >
+        <TableInfo headers={headers} data={vehicles} />
+      </Box>
     </Box>
   );
 }
