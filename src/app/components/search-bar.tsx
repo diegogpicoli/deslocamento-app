@@ -15,6 +15,12 @@ function SearchBar({ filtros }: { filtros: Record<string, string> }) {
     setTypeFilter(selectedOption);
   }, [selectedOption]);
 
+  const handleKeyDown = (event: React.KeyboardEvent<HTMLInputElement>) => {
+    if (event.key === "Enter") {
+      setSearchValue(value);
+    }
+  };
+
   return (
     <Box sx={{ display: "flex", justifyContent: "center", marginTop: "20px" }}>
       <Select
@@ -34,6 +40,7 @@ function SearchBar({ filtros }: { filtros: Record<string, string> }) {
       </Select>
       <TextField
         onChange={(event) => setValue(event.target.value)}
+        onKeyDown={handleKeyDown}
         sx={{ width: "50ch" }}
         size="small"
         label="Pesquisar"

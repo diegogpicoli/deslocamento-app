@@ -11,6 +11,7 @@ export interface ClientData {
 }
 
 export interface ConductorData {
+  id: number;
   nome: string;
   numeroHabilitacao: string;
   categoriaHabilitacao: string;

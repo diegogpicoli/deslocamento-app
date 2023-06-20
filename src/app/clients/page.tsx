@@ -2,12 +2,13 @@
 
 import { useContext, useEffect, useState } from "react";
 
+import ClientForm from "../components/forms/client-form";
 import SearchBar from "../components/search-bar";
 import TableInfo from "../components/table-info";
 
 import { MainContextData, myContext } from "@/context/MainContext";
 import { ClientData } from "@/interfaces/types";
-import fetchApi from "@/utils/api";
+import { fetchApi } from "@/utils/api";
 import { Box } from "@mui/material";
 
 const headers = {
@@ -68,6 +69,7 @@ function Clients() {
       >
         <TableInfo
           headers={Object.values(headers)}
+          Form={ClientForm}
           data={
             filterClients.length === 0 && searchValue === ""
               ? clients

@@ -2,12 +2,13 @@
 
 import { useContext, useEffect, useState } from "react";
 
+import ConductorForm from "../components/forms/conductor-form";
 import SearchBar from "../components/search-bar";
 import TableInfo from "../components/table-info";
 
 import { MainContextData, myContext } from "@/context/MainContext";
 import { ConductorData } from "@/interfaces/types";
-import fetchApi from "@/utils/api";
+import { fetchApi } from "@/utils/api";
 import { Box } from "@mui/material";
 
 const headers = {
@@ -64,6 +65,7 @@ function Conductors() {
       >
         <TableInfo
           headers={Object.values(headers)}
+          Form={ConductorForm}
           data={
             filterConductors.length === 0 && searchValue === ""
               ? conductors
