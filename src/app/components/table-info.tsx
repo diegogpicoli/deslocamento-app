@@ -35,6 +35,9 @@ function TableInfo({ headers, data }: TableInfoProps) {
                   {String(value)}
                 </TableCell>
               ))}
+              <TableCell>
+                <DeleteIcon />
+              </TableCell>
             </TableRow>
           );
         })}

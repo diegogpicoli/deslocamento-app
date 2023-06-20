@@ -5,8 +5,6 @@ import NavBar from "./components/nav-bar";
 
 import ThemeStyle from "./theme/theme";
 
-import MainContext from "@/context/MainContext";
-
 const inter = Inter({ subsets: ["latin"] });
 
 export const metadata = {

@@ -10,13 +10,4 @@ const fetchApi = async (url: string) => {
   }
 };
 
-const handleFetchData = async () => {
-  try {
-    const data = await fetchApi("https://api.example.com/data");
-    console.log(data);
-  } catch (error) {
-    console.error("error");
-  }
-};
-
 export default fetchApi;

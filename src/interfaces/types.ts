@@ -25,7 +25,7 @@ export interface VehiclesData {
   kmAtual: number;
 }
 
-export interface Deslocamento {
+export interface DisplacementsData {
   id: number;
   kmInicial: number;
   kmFinal: number;

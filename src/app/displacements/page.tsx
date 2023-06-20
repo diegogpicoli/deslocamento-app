@@ -1,40 +1,65 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useContext, useEffect, useState } from "react";
 
 import SearchBar from "../components/search-bar";
 import TableInfo from "../components/table-info";
 
+import { MainContextData, myContext } from "@/context/MainContext";
 import { DisplacementsData } from "@/interfaces/types";
 import fetchApi from "@/utils/api";
 import { Box } from "@mui/material";
 
-const headers = [
-  "ID",
-  "Km Inicial",
-  "Km Final",
-  "Inicio Deslocamento",
-  "Fim do Descolamento",
-  "Check List",
-  "Motivo",
-  "Observação",
-  "Id Condutor",
-  "Id Veiculo",
-  "Id Cliente"
-];
+const headers = {
+  id: "ID",
+  kmInicial: "Km Inicial",
+  kmFinal: "Km Final",
+  inicioDeslocamento: "Inicio Deslocamento",
+  fimDeslocamento: "Fim do Descolamento",
+  checkList: "Check List",
+  motivo: "Motivo",
+  observacao: "Observação",
+  idCondutor: "Id Condutor",
+  idVeiculo: "Id Veiculo",
+  idCliente: "Id Cliente"
+};
 
 function Displacements() {
-  const [vehicles, setVehicles] = useState<DisplacementsData[]>([]);
+  const { searchValue, typeFilter, setSearchValue, setTypeFilter } =
+    useContext<MainContextData>(myContext);
+
+  const [displacements, setDisplacements] = useState<DisplacementsData[]>([]);
+  const [filterDisplacements, setFilterDisplacements] = useState<
+    DisplacementsData[]
+  >([]);
   useEffect(() => {
     const fetchData = async () => {
       const data = await fetchApi(
         "https://api-deslocamento.herokuapp.com/api/v1/Deslocamento"
       );
-      setVehicles(data);
+      setDisplacements(data);
     };
 
     fetchData();
+    setSearchValue("");
+    setTypeFilter("");
   }, []);
+
+  useEffect(() => {
+    if (searchValue == "") {
+      setFilterDisplacements([]);
+    }
+    if (searchValue !== "") {
+      const filterDisplacements = displacements.filter((displacement) => {
+        const value = displacement[typeFilter as keyof typeof displacement];
+        return value
+          .toString()
+          .toLowerCase()
+          .includes(searchValue.toLowerCase());
+      });
+      setFilterDisplacements(filterDisplacements);
+    }
+  }, [searchValue]);
 
   return (
     <Box>
@@ -45,7 +70,14 @@ function Displacements() {
           justifyContent: "center"
         }}
       >
-        <TableInfo headers={headers} data={vehicles} />
+        <TableInfo
+          headers={Object.values(headers)}
+          data={
+            filterDisplacements.length === 0 && searchValue === ""
+              ? displacements
+              : filterDisplacements
+          }
+        />
       </Box>
     </Box>
   );

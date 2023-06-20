@@ -10,8 +10,21 @@ import { ClientData } from "@/interfaces/types";
 import fetchApi from "@/utils/api";
 import { Box } from "@mui/material";
 
+const headers = {
+  id: "ID",
+  numeroDocumento: "Número Documento",
+  tipoDocumento: "Tipo Documento",
+  nome: "Nome",
+  logradouro: "Logradouro",
+  numero: "Número",
+  bairro: "Bairro",
+  cidade: "Cidade",
+  uf: "UF"
+};
+
 function Clients() {
-  const { searchValue, typeFilter } = useContext<MainContextData>(myContext);
+  const { searchValue, typeFilter, setSearchValue, setTypeFilter } =
+    useContext<MainContextData>(myContext);
   const [clients, setClients] = useState<ClientData[]>([]);
   const [filterClients, setFilterClients] = useState<ClientData[]>([]);
 
@@ -24,7 +37,8 @@ function Clients() {
     };
 
     fetchData();
-    setFilterClients([]);
+    setSearchValue("");
+    setTypeFilter("");
   }, []);
 
   useEffect(() => {
@@ -45,19 +59,7 @@ function Clients() {
 
   return (
     <Box>
-      <SearchBar
-        filtros={{
-          id: "ID",
-          numeroDocumento: "Número Documento",
-          tipoDocumento: "Tipo Documento",
-          nome: "Nome",
-          logradouro: "Logradouro",
-          numero: "Número",
-          bairro: "Bairro",
-          cidade: "Cidade",
-          uf: "UF"
-        }}
-      />
+      <SearchBar filtros={headers} />
       <Box
         sx={{
           display: "flex",
@@ -65,17 +67,7 @@ function Clients() {
         }}
       >
         <TableInfo
-          headers={[
-            "ID",
-            "Número Documento",
-            "Tipo Documento",
-            "Nome",
-            "Logradouro",
-            "Número",
-            "Bairro",
-            "Cidade",
-            "UF"
-          ]}
+          headers={Object.values(headers)}
           data={
             filterClients.length === 0 && searchValue === ""
               ? clients
