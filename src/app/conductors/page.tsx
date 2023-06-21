@@ -20,7 +20,7 @@ const headers = {
 };
 
 function Conductors() {
-  const { searchValue, typeFilter, setSearchValue, setTypeFilter } =
+  const { searchValue, typeFilter, setSearchValue, setTypeFilter, attTables } =
     useContext<MainContextData>(myContext);
   const [conductors, setConductors] = useState<ConductorData[]>([]);
   const [filterConductors, setFilterConductors] = useState<ConductorData[]>([]);
@@ -36,7 +36,7 @@ function Conductors() {
     fetchData();
     setSearchValue("");
     setTypeFilter("");
-  }, []);
+  }, [attTables]);
 
   useEffect(() => {
     if (searchValue == "") {

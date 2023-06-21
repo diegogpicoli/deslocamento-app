@@ -24,8 +24,9 @@ const headers = {
 };
 
 function Clients() {
-  const { searchValue, typeFilter, setSearchValue, setTypeFilter } =
+  const { searchValue, typeFilter, setSearchValue, setTypeFilter, attTables } =
     useContext<MainContextData>(myContext);
+
   const [clients, setClients] = useState<ClientData[]>([]);
   const [filterClients, setFilterClients] = useState<ClientData[]>([]);
 
@@ -40,7 +41,7 @@ function Clients() {
     fetchData();
     setSearchValue("");
     setTypeFilter("");
-  }, []);
+  }, [attTables]);
 
   useEffect(() => {
     if (searchValue == "") {
@@ -56,7 +57,7 @@ function Clients() {
       });
       setFilterClients(filterClients);
     }
-  }, [searchValue]);
+  }, [searchValue, attTables]);
 
   return (
     <Box>

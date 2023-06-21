@@ -1,5 +1,6 @@
-import { useEffect, useState } from "react";
+import { useContext, useEffect, useState } from "react";
 
+import { MainContextData, myContext } from "@/context/MainContext";
 import { VehiclesData } from "@/interfaces/types";
 import { Box, TextField, Button } from "@mui/material";
 import axios from "axios";
@@ -12,11 +13,11 @@ function VehicleForm({ data }: { data: VehiclesData }) {
     anoFabricacao: 0,
     kmAtual: 0
   });
-
-  const postCliente = async (formData: VehiclesData) => {
+  const { attTables, setAttTables } = useContext<MainContextData>(myContext);
+  const postVehicle = async (formData: VehiclesData) => {
     try {
       const response = await axios.post(
-        "https://api-deslocamento.herokuapp.com/api/v1/Condutor",
+        "https://api-deslocamento.herokuapp.com/api/v1/Veiculo",
         formData,
         {
           headers: {
@@ -54,7 +55,9 @@ function VehicleForm({ data }: { data: VehiclesData }) {
   };
 
   const handleSubmit = () => {
-    postCliente(formData);
+    postVehicle(formData).then(() => {
+      setAttTables(!attTables);
+    });
   };
   return (
     <Box sx={{ display: "flex", flexDirection: "column", gap: 2 }}>

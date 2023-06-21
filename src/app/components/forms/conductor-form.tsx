@@ -1,8 +1,13 @@
-import { useEffect, useState } from "react";
+import { useContext, useEffect, useState } from "react";
 
+import { MainContextData, myContext } from "@/context/MainContext";
 import { ConductorData } from "@/interfaces/types";
 import { Button, Box, TextField } from "@mui/material";
+import { DatePicker } from "@mui/x-date-pickers";
+import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
+import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
 import axios from "axios";
+import "dayjs/locale/pt-br";
 
 function ConductorForm({ data }: { data: ConductorData }) {
   const [formData, setFormData] = useState<ConductorData>({
@@ -13,7 +18,9 @@ function ConductorForm({ data }: { data: ConductorData }) {
     vencimentoHabilitacao: ""
   });
 
-  const postCliente = async (formData: ConductorData) => {
+  const { attTables, setAttTables } = useContext<MainContextData>(myContext);
+
+  const postConductor = async (formData: ConductorData) => {
     try {
       const response = await axios.post(
         "https://api-deslocamento.herokuapp.com/api/v1/Condutor",
@@ -27,12 +34,11 @@ function ConductorForm({ data }: { data: ConductorData }) {
       );
 
       console.log(response.data);
-
-      console.log("Cliente criado com sucesso!");
+      console.log("Conductor criado com sucesso!");
     } catch (error) {
       console.error(error);
       console.log(formData);
-      console.log("Ocorreu um erro ao criar o cliente.");
+      console.log("Ocorreu um erro ao criar o conductor.");
     }
   };
 
@@ -53,7 +59,7 @@ function ConductorForm({ data }: { data: ConductorData }) {
         vencimentoHabilitacao
       });
     }
-  }, []);
+  }, [data]);
 
   const handleChange = (
     event: React.ChangeEvent<{ name: string; value: unknown }>
@@ -65,8 +71,17 @@ function ConductorForm({ data }: { data: ConductorData }) {
     }));
   };
 
+  const handleDateChange = (date: string | null) => {
+    setFormData((prevData) => ({
+      ...prevData,
+      vencimentoHabilitacao: date || ""
+    }));
+  };
+
   const handleSubmit = () => {
-    postCliente(formData);
+    postConductor(formData).then(() => {
+      setAttTables(!attTables);
+    });
   };
 
   return (
@@ -98,19 +113,18 @@ function ConductorForm({ data }: { data: ConductorData }) {
         fullWidth
         required
       />
-      <DatePicker
-        label="Vencimento Habilitação"
-        name="vencimentoHabilitacao"
-        value={formData.vencimentoHabilitacao}
-        onChange={handleDateChange}
-        renderInput={(params) => (
-          <TextField {...params} size="small" fullWidth required />
-        )}
-      />
+      <LocalizationProvider adapterLocale="pt-br" dateAdapter={AdapterDayjs}>
+        <DatePicker
+          value={formData.vencimentoHabilitacao}
+          onChange={handleDateChange}
+          label="Vencimento da Habilitação"
+        />
+      </LocalizationProvider>
       <Button onClick={handleSubmit} variant="contained" color="primary">
         Salvar
       </Button>
     </Box>
   );
 }
+
 export default ConductorForm;

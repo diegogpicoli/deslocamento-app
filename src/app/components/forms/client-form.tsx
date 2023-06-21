@@ -1,5 +1,6 @@
-import React, { useEffect, useState } from "react";
+import React, { useContext, useEffect, useState } from "react";
 
+import { MainContextData, myContext } from "@/context/MainContext";
 import { ClientData } from "@/interfaces/types";
 import { brazilianStates } from "@/utils/api";
 import {
@@ -15,6 +16,7 @@ import {
 import axios from "axios";
 
 function ClientForm({ data }: { data: ClientData }) {
+  const { attTables, setAttTables } = useContext<MainContextData>(myContext);
   const [formData, setFormData] = useState<ClientData>({
     id: 0,
     numeroDocumento: "",
@@ -96,7 +98,9 @@ function ClientForm({ data }: { data: ClientData }) {
   };
 
   const handleSubmit = () => {
-    postCliente(formData);
+    postCliente(formData).then(() => {
+      setAttTables(!attTables);
+    });
   };
 
   return (

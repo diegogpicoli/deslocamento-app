@@ -26,7 +26,7 @@ const headers = {
 };
 
 function Displacements() {
-  const { searchValue, typeFilter, setSearchValue, setTypeFilter } =
+  const { searchValue, typeFilter, setSearchValue, setTypeFilter, attTables } =
     useContext<MainContextData>(myContext);
 
   const [displacements, setDisplacements] = useState<DisplacementsData[]>([]);
@@ -44,7 +44,7 @@ function Displacements() {
     fetchData();
     setSearchValue("");
     setTypeFilter("");
-  }, []);
+  }, [attTables]);
 
   useEffect(() => {
     if (searchValue == "") {
@@ -53,14 +53,14 @@ function Displacements() {
     if (searchValue !== "") {
       const filterDisplacements = displacements.filter((displacement) => {
         const value = displacement[typeFilter as keyof typeof displacement];
-        return value
-          .toString()
-          .toLowerCase()
-          .includes(searchValue.toLowerCase());
+        return (
+          value &&
+          value.toString().toLowerCase().includes(searchValue.toLowerCase())
+        );
       });
       setFilterDisplacements(filterDisplacements);
     }
-  }, [searchValue]);
+  }, [searchValue, attTables]);
 
   return (
     <Box>

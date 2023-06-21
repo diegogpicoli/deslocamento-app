@@ -1,12 +1,14 @@
 "use client";
 
-import React, { ReactNode, createContext, useEffect, useState } from "react";
+import React, { ReactNode, createContext, useState } from "react";
 
 export interface MainContextData {
   searchValue: string;
   setSearchValue: (dados: string) => void;
   typeFilter: string;
   setTypeFilter: (dados: string) => void;
+  attTables: boolean;
+  setAttTables: (b: boolean) => void;
 }
 
 interface MainContextProviderProps {
@@ -18,13 +20,18 @@ export const myContext = createContext<MainContextData>({} as MainContextData);
 function MainContext({ children }: MainContextProviderProps) {
   const [searchValue, setSearchValue] = useState("");
   const [typeFilter, setTypeFilter] = useState("");
-  useEffect(() => {
-    console.log(searchValue);
-  }, [searchValue]);
-  console.log(searchValue);
+  const [attTables, setAttTables] = useState(false);
+
   return (
     <myContext.Provider
-      value={{ searchValue, setSearchValue, typeFilter, setTypeFilter }}
+      value={{
+        searchValue,
+        setSearchValue,
+        typeFilter,
+        setTypeFilter,
+        attTables,
+        setAttTables
+      }}
     >
       {children}
     </myContext.Provider>

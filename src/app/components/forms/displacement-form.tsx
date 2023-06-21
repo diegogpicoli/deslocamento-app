@@ -1,16 +1,16 @@
-import { useEffect, useState } from "react";
+import { useContext, useState } from "react";
 
+import { MainContextData, myContext } from "@/context/MainContext";
 import { DisplacementsData } from "@/interfaces/types";
 import { Box, TextField, Button } from "@mui/material";
 import axios from "axios";
 
-function DisplacementForm({ data }: { data: DisplacementsData }) {
+function DisplacementForm() {
   const [formData, setFormData] = useState<DisplacementsData>({
     id: 0,
     kmInicial: 0,
     kmFinal: 0,
     inicioDeslocamento: "",
-    fimDeslocamento: "",
     checkList: "",
     motivo: "",
     observacao: "",
@@ -18,11 +18,11 @@ function DisplacementForm({ data }: { data: DisplacementsData }) {
     idVeiculo: 0,
     idCliente: 0
   });
-
-  const postCliente = async (formData: DisplacementsData) => {
+  const { attTables, setAttTables } = useContext<MainContextData>(myContext);
+  const postDisplacement = async (formData: DisplacementsData) => {
     try {
       const response = await axios.post(
-        "https://api-deslocamento.herokuapp.com/api/v1/Condutor",
+        "https://api-deslocamento.herokuapp.com/api/v1/Deslocamento/IniciarDeslocamento",
         formData,
         {
           headers: {
@@ -42,37 +42,6 @@ function DisplacementForm({ data }: { data: DisplacementsData }) {
     }
   };
 
-  useEffect(() => {
-    if (data) {
-      const {
-        id,
-        kmInicial,
-        kmFinal,
-        inicioDeslocamento,
-        fimDeslocamento,
-        checkList,
-        motivo,
-        observacao,
-        idCondutor,
-        idVeiculo,
-        idCliente
-      } = data;
-      setFormData({
-        id,
-        kmInicial,
-        kmFinal,
-        inicioDeslocamento,
-        fimDeslocamento,
-        checkList,
-        motivo,
-        observacao,
-        idCondutor,
-        idVeiculo,
-        idCliente
-      });
-    }
-  }, []);
-
   const handleChange = (
     event: React.ChangeEvent<{ name: string; value: unknown }>
   ) => {
@@ -84,7 +53,9 @@ function DisplacementForm({ data }: { data: DisplacementsData }) {
   };
 
   const handleSubmit = () => {
-    postCliente(formData);
+    postDisplacement(formData).then(() => {
+      setAttTables(!attTables);
+    });
   };
   return (
     <Box sx={{ display: "flex", flexDirection: "column", gap: 2 }}>
@@ -113,15 +84,6 @@ function DisplacementForm({ data }: { data: DisplacementsData }) {
         name="inicioDeslocamento"
         size="small"
         value={formData.inicioDeslocamento}
-        onChange={handleChange}
-        fullWidth
-        required
-      />
-      <TextField
-        label="Fim Deslocamento"
-        name="fimDeslocamento"
-        size="small"
-        value={formData.fimDeslocamento}
         onChange={handleChange}
         fullWidth
         required

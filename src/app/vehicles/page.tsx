@@ -2,7 +2,7 @@
 
 import { useContext, useEffect, useState } from "react";
 
-import ConductorForm from "../components/forms/displacement-form";
+import VehicleForm from "../components/forms/vehicle-form";
 import SearchBar from "../components/search-bar";
 import TableInfo from "../components/table-info";
 
@@ -12,7 +12,6 @@ import { fetchApi } from "@/utils/api";
 import { Box } from "@mui/material";
 
 const headers = {
-  id: "ID",
   placa: "Placa",
   marcaModelo: "Modelo",
   anoFabricacao: "Fabricação",
@@ -20,7 +19,7 @@ const headers = {
 };
 
 function Vehicles() {
-  const { searchValue, typeFilter, setSearchValue, setTypeFilter } =
+  const { searchValue, typeFilter, setSearchValue, setTypeFilter, attTables } =
     useContext<MainContextData>(myContext);
 
   const [vehicles, setVehicles] = useState<VehiclesData[]>([]);
@@ -36,7 +35,7 @@ function Vehicles() {
     fetchData();
     setSearchValue("");
     setTypeFilter("");
-  }, []);
+  }, [attTables]);
 
   useEffect(() => {
     if (searchValue == "") {
@@ -52,7 +51,7 @@ function Vehicles() {
       });
       setFilterVehicles(filterVehicles);
     }
-  }, [searchValue]);
+  }, [searchValue, attTables]);
 
   return (
     <Box>
@@ -64,7 +63,7 @@ function Vehicles() {
         }}
       >
         <TableInfo
-          Form={ConductorForm}
+          Form={VehicleForm}
           headers={Object.values(headers)}
           data={
             filterVehicles.length === 0 && searchValue === ""
