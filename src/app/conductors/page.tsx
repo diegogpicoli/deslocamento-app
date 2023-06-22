@@ -8,7 +8,7 @@ import TableInfo from "../components/table-info";
 
 import { MainContextData, myContext } from "@/context/MainContext";
 import { ConductorData } from "@/interfaces/types";
-import { fetchApi } from "@/utils/api";
+import { deleteApi, fetchApi } from "@/utils/api";
 import { Box } from "@mui/material";
 
 const headers = {
@@ -19,17 +19,23 @@ const headers = {
   vencimentoHabilitacao: "Vencimento Habilitação"
 };
 
+const URL_CONDUCTORS = "https://api-deslocamento.herokuapp.com/api/v1/Condutor";
+
 function Conductors() {
-  const { searchValue, typeFilter, setSearchValue, setTypeFilter, attTables } =
-    useContext<MainContextData>(myContext);
+  const {
+    searchValue,
+    typeFilter,
+    setSearchValue,
+    setTypeFilter,
+    attTables,
+    setAttTables
+  } = useContext<MainContextData>(myContext);
   const [conductors, setConductors] = useState<ConductorData[]>([]);
   const [filterConductors, setFilterConductors] = useState<ConductorData[]>([]);
 
   useEffect(() => {
     const fetchData = async () => {
-      const data = await fetchApi(
-        "https://api-deslocamento.herokuapp.com/api/v1/Condutor"
-      );
+      const data = await fetchApi(URL_CONDUCTORS);
       setConductors(data);
     };
 
@@ -45,14 +51,22 @@ function Conductors() {
     if (searchValue !== "") {
       const filterConductors = conductors.filter((conductor) => {
         const value = conductor[typeFilter as keyof typeof conductor];
-        return value
-          .toString()
-          .toLowerCase()
-          .includes(searchValue.toLowerCase());
+        if (value) {
+          return value
+            .toString()
+            .toLowerCase()
+            .includes(searchValue.toLowerCase());
+        }
       });
       setFilterConductors(filterConductors);
     }
-  }, [searchValue]);
+  }, [searchValue, attTables]);
+
+  const deleteConductors = async (id: string) => {
+    await deleteApi(id, URL_CONDUCTORS).then(() => {
+      setAttTables(!attTables);
+    });
+  };
 
   return (
     <Box>
@@ -64,6 +78,7 @@ function Conductors() {
         }}
       >
         <TableInfo
+          deleteData={deleteConductors}
           headers={Object.values(headers)}
           Form={ConductorForm}
           data={

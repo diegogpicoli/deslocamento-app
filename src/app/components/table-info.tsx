@@ -1,7 +1,7 @@
 "use client";
 import { JSXElementConstructor, useState } from "react";
 
-import MyModal from "./modal";
+import MyModal from "./myModal";
 
 import {
   ClientData,
@@ -23,10 +23,13 @@ import {
 interface TableInfoProps {
   headers: string[];
   data: ClientData[] | ConductorData[] | VehiclesData[] | DisplacementsData[];
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   Form: JSXElementConstructor<any>;
+  deleteData: (id: string) => void;
 }
 
-function TableInfo({ headers, data, Form }: TableInfoProps) {
+function TableInfo({ headers, data, Form, deleteData }: TableInfoProps) {
+  const [selectId, setSelectId] = useState("");
   const [open, setOpen] = useState(false);
   const handleOpen = () => {
     setOpen(true);
@@ -36,10 +39,21 @@ function TableInfo({ headers, data, Form }: TableInfoProps) {
     setOpen(false);
   };
 
+  const handleOpenEdit = (id: number) => {
+    setSelectId(String(id));
+    setOpen(true);
+  };
+
+  const attSelectId = () => {
+    setSelectId("");
+  };
+
   return (
     <Box sx={{ marginTop: "30px" }}>
       <Box sx={{ display: "flex", justifyContent: "flex-end" }}>
         <MyModal
+          selectId={selectId}
+          attSelectId={attSelectId}
           open={open}
           handleOpen={handleOpen}
           handleClose={handleClose}
@@ -64,10 +78,16 @@ function TableInfo({ headers, data, Form }: TableInfoProps) {
                   </TableCell>
                 ))}
                 <TableCell>
-                  <DeleteIcon />
+                  <DeleteIcon
+                    style={{ cursor: "pointer" }}
+                    onClick={() => deleteData(String(item.id))}
+                  />
                 </TableCell>
                 <TableCell>
-                  <EditIcon />
+                  <EditIcon
+                    style={{ cursor: "pointer" }}
+                    onClick={() => handleOpenEdit(item.id)}
+                  />
                 </TableCell>
               </TableRow>
             );

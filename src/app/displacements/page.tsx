@@ -8,7 +8,7 @@ import TableInfo from "../components/table-info";
 
 import { MainContextData, myContext } from "@/context/MainContext";
 import { DisplacementsData } from "@/interfaces/types";
-import { fetchApi } from "@/utils/api";
+import { deleteApi, fetchApi } from "@/utils/api";
 import { Box } from "@mui/material";
 
 const headers = {
@@ -25,9 +25,18 @@ const headers = {
   idCliente: "Id Cliente"
 };
 
+const URL_DISPLACEMENTS =
+  "https://api-deslocamento.herokuapp.com/api/v1/Deslocamento/";
+
 function Displacements() {
-  const { searchValue, typeFilter, setSearchValue, setTypeFilter, attTables } =
-    useContext<MainContextData>(myContext);
+  const {
+    searchValue,
+    typeFilter,
+    setSearchValue,
+    setTypeFilter,
+    attTables,
+    setAttTables
+  } = useContext<MainContextData>(myContext);
 
   const [displacements, setDisplacements] = useState<DisplacementsData[]>([]);
   const [filterDisplacements, setFilterDisplacements] = useState<
@@ -35,9 +44,7 @@ function Displacements() {
   >([]);
   useEffect(() => {
     const fetchData = async () => {
-      const data = await fetchApi(
-        "https://api-deslocamento.herokuapp.com/api/v1/Deslocamento"
-      );
+      const data = await fetchApi(URL_DISPLACEMENTS);
       setDisplacements(data);
     };
 
@@ -62,6 +69,12 @@ function Displacements() {
     }
   }, [searchValue, attTables]);
 
+  const deleteDisplacements = async (id: string) => {
+    await deleteApi(id, URL_DISPLACEMENTS).then(() => {
+      setAttTables(!attTables);
+    });
+  };
+
   return (
     <Box>
       <SearchBar filtros={headers} />
@@ -72,6 +85,7 @@ function Displacements() {
         }}
       >
         <TableInfo
+          deleteData={deleteDisplacements}
           headers={Object.values(headers)}
           Form={DisplacementForm}
           data={

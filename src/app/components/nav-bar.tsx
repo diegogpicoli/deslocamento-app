@@ -19,7 +19,6 @@ function NavBar() {
       <AppBar sx={{ maxWidth: "1400px" }} position="static">
         <Toolbar
           sx={{
-            backgroundColor: "white",
             justifyContent: "space-between"
           }}
         >

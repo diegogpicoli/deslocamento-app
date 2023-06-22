@@ -2,14 +2,17 @@ import { useContext, useEffect, useState } from "react";
 
 import { MainContextData, myContext } from "@/context/MainContext";
 import { ConductorData } from "@/interfaces/types";
+import { fetchApi, postApi, updateApi } from "@/utils/api";
 import { Button, Box, TextField } from "@mui/material";
 import { DatePicker } from "@mui/x-date-pickers";
 import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
 import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
-import axios from "axios";
 import "dayjs/locale/pt-br";
 
-function ConductorForm({ data }: { data: ConductorData }) {
+const URL_CONDUCTORS =
+  "https://api-deslocamento.herokuapp.com/api/v1/Condutor/";
+
+function ConductorForm({ selectId }: { selectId: string }) {
   const [formData, setFormData] = useState<ConductorData>({
     id: 0,
     nome: "",
@@ -17,49 +20,26 @@ function ConductorForm({ data }: { data: ConductorData }) {
     categoriaHabilitacao: "",
     vencimentoHabilitacao: ""
   });
+  const [dateVencimento, setDateVencimento] = useState("");
 
   const { attTables, setAttTables } = useContext<MainContextData>(myContext);
 
-  const postConductor = async (formData: ConductorData) => {
-    try {
-      const response = await axios.post(
-        "https://api-deslocamento.herokuapp.com/api/v1/Condutor",
-        formData,
-        {
-          headers: {
-            accept: "text/plain",
-            "Content-Type": "application/json"
-          }
-        }
-      );
-
-      console.log(response.data);
-      console.log("Conductor criado com sucesso!");
-    } catch (error) {
-      console.error(error);
-      console.log(formData);
-      console.log("Ocorreu um erro ao criar o conductor.");
-    }
-  };
-
   useEffect(() => {
-    if (data) {
-      const {
-        id,
-        nome,
-        numeroHabilitacao,
-        categoriaHabilitacao,
-        vencimentoHabilitacao
-      } = data;
-      setFormData({
-        id,
-        nome,
-        numeroHabilitacao,
-        categoriaHabilitacao,
-        vencimentoHabilitacao
-      });
+    if (selectId !== "") {
+      const fetchData = async () => {
+        const data = await fetchApi(`${URL_CONDUCTORS}${selectId}`);
+        if (data) console.log(data.catergoriaHabilitacao);
+        setDateVencimento(data.vencimentoHabilitacao);
+        setFormData({
+          ...data,
+          categoriaHabilitacao: data.catergoriaHabilitacao,
+          vencimentoHabilitacao: ""
+        });
+        console.log(formData);
+      };
+      fetchData();
     }
-  }, [data]);
+  }, []);
 
   const handleChange = (
     event: React.ChangeEvent<{ name: string; value: unknown }>
@@ -78,8 +58,18 @@ function ConductorForm({ data }: { data: ConductorData }) {
     }));
   };
 
-  const handleSubmit = () => {
-    postConductor(formData).then(() => {
+  const handlePost = async () => {
+    await postApi(URL_CONDUCTORS, formData).then(() => {
+      setAttTables(!attTables);
+    });
+  };
+
+  const handlePut = async () => {
+    delete formData.catergoriaHabilitacao;
+    await updateApi(selectId, URL_CONDUCTORS, {
+      ...formData,
+      vencimentoHabilitacao: dateVencimento
+    }).then(() => {
       setAttTables(!attTables);
     });
   };
@@ -89,6 +79,7 @@ function ConductorForm({ data }: { data: ConductorData }) {
       <TextField
         label="Nome"
         name="nome"
+        disabled={selectId !== "" && true}
         size="small"
         value={formData.nome}
         onChange={handleChange}
@@ -98,6 +89,7 @@ function ConductorForm({ data }: { data: ConductorData }) {
       <TextField
         label="Número Habilitação"
         name="numeroHabilitacao"
+        disabled={selectId !== "" && true}
         size="small"
         value={formData.numeroHabilitacao}
         onChange={handleChange}
@@ -120,8 +112,12 @@ function ConductorForm({ data }: { data: ConductorData }) {
           label="Vencimento da Habilitação"
         />
       </LocalizationProvider>
-      <Button onClick={handleSubmit} variant="contained" color="primary">
-        Salvar
+      <Button
+        onClick={selectId !== "" ? handlePut : handlePost}
+        variant="contained"
+        color="primary"
+      >
+        {selectId !== "" ? "Atualizar" : "Salvar"}
       </Button>
     </Box>
   );

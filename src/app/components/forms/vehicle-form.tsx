@@ -2,10 +2,12 @@ import { useContext, useEffect, useState } from "react";
 
 import { MainContextData, myContext } from "@/context/MainContext";
 import { VehiclesData } from "@/interfaces/types";
+import { fetchApi, postApi, updateApi } from "@/utils/api";
 import { Box, TextField, Button } from "@mui/material";
-import axios from "axios";
 
-function VehicleForm({ data }: { data: VehiclesData }) {
+const URL_VEHICLE = "https://api-deslocamento.herokuapp.com/api/v1/Veiculo/";
+
+function VehicleForm({ selectId }: { selectId: string }) {
   const [formData, setFormData] = useState<VehiclesData>({
     id: 0,
     placa: "",
@@ -14,33 +16,14 @@ function VehicleForm({ data }: { data: VehiclesData }) {
     kmAtual: 0
   });
   const { attTables, setAttTables } = useContext<MainContextData>(myContext);
-  const postVehicle = async (formData: VehiclesData) => {
-    try {
-      const response = await axios.post(
-        "https://api-deslocamento.herokuapp.com/api/v1/Veiculo",
-        formData,
-        {
-          headers: {
-            accept: "text/plain",
-            "Content-Type": "application/json"
-          }
-        }
-      );
-
-      console.log(response.data);
-
-      console.log("Cliente criado com sucesso!");
-    } catch (error) {
-      console.error(error);
-
-      console.log("Ocorreu um erro ao criar o cliente.");
-    }
-  };
 
   useEffect(() => {
-    if (data) {
-      const { id, placa, marcaModelo, anoFabricacao, kmAtual } = data;
-      setFormData({ id, placa, marcaModelo, anoFabricacao, kmAtual });
+    if (selectId !== "") {
+      const fetchData = async () => {
+        const data = await fetchApi(`${URL_VEHICLE}${selectId}`);
+        if (data) setFormData(data);
+      };
+      fetchData();
     }
   }, []);
 
@@ -54,11 +37,18 @@ function VehicleForm({ data }: { data: VehiclesData }) {
     }));
   };
 
-  const handleSubmit = () => {
-    postVehicle(formData).then(() => {
+  const handlePost = async () => {
+    await postApi(URL_VEHICLE, formData).then(() => {
       setAttTables(!attTables);
     });
   };
+
+  const handlePut = async () => {
+    await updateApi(selectId, URL_VEHICLE, formData).then(() => {
+      setAttTables(!attTables);
+    });
+  };
+
   return (
     <Box sx={{ display: "flex", flexDirection: "column", gap: 2 }}>
       <TextField
@@ -73,6 +63,7 @@ function VehicleForm({ data }: { data: VehiclesData }) {
       <TextField
         label="Marca/Modelo"
         name="marcaModelo"
+        disabled={selectId !== "" && true}
         size="small"
         value={formData.marcaModelo}
         onChange={handleChange}
@@ -82,6 +73,7 @@ function VehicleForm({ data }: { data: VehiclesData }) {
       <TextField
         label="Ano de Fabricação"
         name="anoFabricacao"
+        disabled={selectId !== "" && true}
         size="small"
         value={formData.anoFabricacao}
         onChange={handleChange}
@@ -99,8 +91,12 @@ function VehicleForm({ data }: { data: VehiclesData }) {
         required
         type="number"
       />
-      <Button onClick={handleSubmit} variant="contained" color="primary">
-        Enviar
+      <Button
+        onClick={selectId !== "" ? handlePut : handlePost}
+        variant="contained"
+        color="primary"
+      >
+        {selectId !== "" ? "Atualizar" : "Salvar"}
       </Button>
     </Box>
   );

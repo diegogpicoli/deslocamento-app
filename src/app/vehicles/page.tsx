@@ -8,27 +8,34 @@ import TableInfo from "../components/table-info";
 
 import { MainContextData, myContext } from "@/context/MainContext";
 import { VehiclesData } from "@/interfaces/types";
-import { fetchApi } from "@/utils/api";
+import { deleteApi, fetchApi } from "@/utils/api";
 import { Box } from "@mui/material";
 
 const headers = {
+  id: "ID",
   placa: "Placa",
   marcaModelo: "Modelo",
   anoFabricacao: "Fabricação",
   kmAtual: "Quilometragem Atual"
 };
 
+const URL_VEHICLE = "https://api-deslocamento.herokuapp.com/api/v1/Veiculo/";
+
 function Vehicles() {
-  const { searchValue, typeFilter, setSearchValue, setTypeFilter, attTables } =
-    useContext<MainContextData>(myContext);
+  const {
+    searchValue,
+    typeFilter,
+    setSearchValue,
+    setTypeFilter,
+    attTables,
+    setAttTables
+  } = useContext<MainContextData>(myContext);
 
   const [vehicles, setVehicles] = useState<VehiclesData[]>([]);
   const [filterVehicles, setFilterVehicles] = useState<VehiclesData[]>([]);
   useEffect(() => {
     const fetchData = async () => {
-      const data = await fetchApi(
-        "https://api-deslocamento.herokuapp.com/api/v1/Veiculo"
-      );
+      const data = await fetchApi(URL_VEHICLE);
       setVehicles(data);
     };
 
@@ -53,6 +60,12 @@ function Vehicles() {
     }
   }, [searchValue, attTables]);
 
+  const deleteVehicles = async (id: string) => {
+    await deleteApi(id, URL_VEHICLE).then(() => {
+      setAttTables(!attTables);
+    });
+  };
+
   return (
     <Box>
       <SearchBar filtros={headers} />
@@ -63,6 +76,7 @@ function Vehicles() {
         }}
       >
         <TableInfo
+          deleteData={deleteVehicles}
           Form={VehicleForm}
           headers={Object.values(headers)}
           data={

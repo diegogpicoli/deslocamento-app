@@ -15,6 +15,7 @@ export interface ConductorData {
   nome: string;
   numeroHabilitacao: string;
   categoriaHabilitacao: string;
+  catergoriaHabilitacao?: string;
   vencimentoHabilitacao: string;
 }
 

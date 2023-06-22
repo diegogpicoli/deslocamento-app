@@ -1,4 +1,4 @@
-import React, { JSXElementConstructor } from "react";
+import React, { JSXElementConstructor, useEffect } from "react";
 
 import { Button, Box, Modal } from "@mui/material";
 
@@ -6,14 +6,19 @@ interface ModalProps {
   open: boolean;
   handleOpen: () => void;
   handleClose: () => void;
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   Form: JSXElementConstructor<any>;
+  selectId: string;
+  attSelectId: () => void;
 }
 
 const MyModal: React.FC<ModalProps> = ({
   open,
   handleOpen,
   handleClose,
-  Form
+  Form,
+  selectId,
+  attSelectId
 }) => {
   const style = {
     position: "absolute" as const,
@@ -29,9 +34,21 @@ const MyModal: React.FC<ModalProps> = ({
     overflow: "auto"
   };
 
+  useEffect(() => {
+    console.log("teste");
+    return () => {
+      attSelectId();
+    };
+  }, []);
+
+  const newModal = () => {
+    attSelectId();
+    handleOpen();
+  };
+
   return (
     <Box>
-      <Button onClick={handleOpen}>Novo</Button>
+      <Button onClick={newModal}>Novo</Button>
       <Modal
         open={open}
         onClose={handleClose}
@@ -39,7 +56,7 @@ const MyModal: React.FC<ModalProps> = ({
         aria-describedby="modal-modal-description"
       >
         <Box sx={style}>
-          <Form />
+          <Form selectId={selectId} />
         </Box>
       </Modal>
     </Box>

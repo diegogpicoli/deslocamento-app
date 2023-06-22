@@ -8,8 +8,10 @@ import TableInfo from "../components/table-info";
 
 import { MainContextData, myContext } from "@/context/MainContext";
 import { ClientData } from "@/interfaces/types";
-import { fetchApi } from "@/utils/api";
+import { deleteApi, fetchApi } from "@/utils/api";
 import { Box } from "@mui/material";
+
+const URL_CLIENT = "https://api-deslocamento.herokuapp.com/api/v1/Cliente/";
 
 const headers = {
   id: "ID",
@@ -24,17 +26,21 @@ const headers = {
 };
 
 function Clients() {
-  const { searchValue, typeFilter, setSearchValue, setTypeFilter, attTables } =
-    useContext<MainContextData>(myContext);
+  const {
+    searchValue,
+    typeFilter,
+    setSearchValue,
+    setTypeFilter,
+    attTables,
+    setAttTables
+  } = useContext<MainContextData>(myContext);
 
   const [clients, setClients] = useState<ClientData[]>([]);
   const [filterClients, setFilterClients] = useState<ClientData[]>([]);
 
   useEffect(() => {
     const fetchData = async () => {
-      const data = await fetchApi(
-        "https://api-deslocamento.herokuapp.com/api/v1/Cliente"
-      );
+      const data = await fetchApi(URL_CLIENT);
       setClients(data);
     };
 
@@ -59,6 +65,12 @@ function Clients() {
     }
   }, [searchValue, attTables]);
 
+  const deleteClient = async (id: string) => {
+    await deleteApi(id, URL_CLIENT).then(() => {
+      setAttTables(!attTables);
+    });
+  };
+
   return (
     <Box>
       <SearchBar filtros={headers} />
@@ -71,6 +83,7 @@ function Clients() {
         <TableInfo
           headers={Object.values(headers)}
           Form={ClientForm}
+          deleteData={deleteClient}
           data={
             filterClients.length === 0 && searchValue === ""
               ? clients

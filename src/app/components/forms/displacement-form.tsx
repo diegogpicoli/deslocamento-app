@@ -2,8 +2,11 @@ import { useContext, useState } from "react";
 
 import { MainContextData, myContext } from "@/context/MainContext";
 import { DisplacementsData } from "@/interfaces/types";
+import { postApi } from "@/utils/api";
 import { Box, TextField, Button } from "@mui/material";
-import axios from "axios";
+
+const URL_DISPLACEMENTS =
+  "https://api-deslocamento.herokuapp.com/api/v1/Deslocamento/";
 
 function DisplacementForm() {
   const [formData, setFormData] = useState<DisplacementsData>({
@@ -18,29 +21,8 @@ function DisplacementForm() {
     idVeiculo: 0,
     idCliente: 0
   });
+
   const { attTables, setAttTables } = useContext<MainContextData>(myContext);
-  const postDisplacement = async (formData: DisplacementsData) => {
-    try {
-      const response = await axios.post(
-        "https://api-deslocamento.herokuapp.com/api/v1/Deslocamento/IniciarDeslocamento",
-        formData,
-        {
-          headers: {
-            accept: "text/plain",
-            "Content-Type": "application/json"
-          }
-        }
-      );
-
-      console.log(response.data);
-
-      console.log("Cliente criado com sucesso!");
-    } catch (error) {
-      console.error(error);
-
-      console.log("Ocorreu um erro ao criar o cliente.");
-    }
-  };
 
   const handleChange = (
     event: React.ChangeEvent<{ name: string; value: unknown }>
@@ -52,11 +34,12 @@ function DisplacementForm() {
     }));
   };
 
-  const handleSubmit = () => {
-    postDisplacement(formData).then(() => {
+  const handlePost = async () => {
+    await postApi(URL_DISPLACEMENTS, formData).then(() => {
       setAttTables(!attTables);
     });
   };
+
   return (
     <Box sx={{ display: "flex", flexDirection: "column", gap: 2 }}>
       <TextField
@@ -145,7 +128,7 @@ function DisplacementForm() {
         required
         type="number"
       />
-      <Button onClick={handleSubmit} variant="contained" color="primary">
+      <Button onClick={handlePost} variant="contained" color="primary">
         Salvar
       </Button>
     </Box>

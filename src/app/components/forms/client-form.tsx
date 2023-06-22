@@ -2,7 +2,7 @@ import React, { useContext, useEffect, useState } from "react";
 
 import { MainContextData, myContext } from "@/context/MainContext";
 import { ClientData } from "@/interfaces/types";
-import { brazilianStates } from "@/utils/api";
+import { brazilStates, fetchApi, postApi, updateApi } from "@/utils/api";
 import {
   Box,
   Button,
@@ -13,9 +13,10 @@ import {
   SelectChangeEvent,
   TextField
 } from "@mui/material";
-import axios from "axios";
 
-function ClientForm({ data }: { data: ClientData }) {
+const URL_CLIENT = "https://api-deslocamento.herokuapp.com/api/v1/Cliente/";
+
+function ClientForm({ selectId }: { selectId: string }) {
   const { attTables, setAttTables } = useContext<MainContextData>(myContext);
   const [formData, setFormData] = useState<ClientData>({
     id: 0,
@@ -29,53 +30,13 @@ function ClientForm({ data }: { data: ClientData }) {
     uf: ""
   });
 
-  const postCliente = async (formData: ClientData) => {
-    try {
-      const response = await axios.post(
-        "https://api-deslocamento.herokuapp.com/api/v1/Cliente",
-        formData,
-        {
-          headers: {
-            accept: "text/plain",
-            "Content-Type": "application/json"
-          }
-        }
-      );
-
-      console.log(response.data);
-
-      console.log("Cliente criado com sucesso!");
-    } catch (error) {
-      console.error(error);
-
-      console.log("Ocorreu um erro ao criar o cliente.");
-    }
-  };
-
   useEffect(() => {
-    if (data) {
-      const {
-        id,
-        numeroDocumento,
-        tipoDocumento,
-        nome,
-        logradouro,
-        numero,
-        bairro,
-        cidade,
-        uf
-      } = data;
-      setFormData({
-        id,
-        numeroDocumento,
-        tipoDocumento,
-        nome,
-        logradouro,
-        numero,
-        bairro,
-        cidade,
-        uf
-      });
+    if (selectId !== "") {
+      const fetchData = async () => {
+        const data = await fetchApi(`${URL_CLIENT}${selectId}`);
+        if (data) setFormData(data);
+      };
+      fetchData();
     }
   }, []);
 
@@ -97,8 +58,14 @@ function ClientForm({ data }: { data: ClientData }) {
     }));
   };
 
-  const handleSubmit = () => {
-    postCliente(formData).then(() => {
+  const handlePost = async () => {
+    await postApi(URL_CLIENT, formData).then(() => {
+      setAttTables(!attTables);
+    });
+  };
+
+  const handlePut = async () => {
+    await updateApi(selectId, URL_CLIENT, formData).then(() => {
       setAttTables(!attTables);
     });
   };
@@ -107,6 +74,7 @@ function ClientForm({ data }: { data: ClientData }) {
     <Box sx={{ display: "flex", flexDirection: "column", gap: 2 }}>
       <TextField
         label="Número do Documento"
+        disabled={selectId !== "" && true}
         name="numeroDocumento"
         size="small"
         value={formData.numeroDocumento}
@@ -116,6 +84,7 @@ function ClientForm({ data }: { data: ClientData }) {
       />
       <TextField
         label="Tipo do Documento"
+        disabled={selectId !== "" && true}
         name="tipoDocumento"
         size="small"
         value={formData.tipoDocumento}
@@ -176,15 +145,19 @@ function ClientForm({ data }: { data: ClientData }) {
           value={formData.uf}
           onChange={handleChangeSelect}
         >
-          {brazilianStates.map((state) => (
+          {brazilStates.map((state) => (
             <MenuItem key={state.uf} value={state.uf}>
               {state.nome} ({state.uf})
             </MenuItem>
           ))}
         </Select>
       </FormControl>
-      <Button onClick={handleSubmit} variant="contained" color="primary">
-        Salvar
+      <Button
+        onClick={selectId !== "" ? handlePut : handlePost}
+        variant="contained"
+        color="primary"
+      >
+        {selectId !== "" ? "Atualizar" : "Salvar"}
       </Button>
     </Box>
   );
