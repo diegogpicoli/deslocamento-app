@@ -32,7 +32,7 @@ export interface DisplacementsData {
   kmInicial: number;
   kmFinal: number;
   inicioDeslocamento: string;
-  fimDeslocamento?: string;
+  fimDeslocamento: null | string;
   checkList: string;
   motivo: string;
   observacao: string;

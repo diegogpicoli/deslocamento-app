@@ -9,6 +9,7 @@ import TableInfo from "../components/table-info";
 import { MainContextData, myContext } from "@/context/MainContext";
 import { ConductorData } from "@/interfaces/types";
 import { deleteApi, fetchApi } from "@/utils/api";
+import { formatDate } from "@/utils/functions";
 import { Box } from "@mui/material";
 
 const headers = {
@@ -19,7 +20,8 @@ const headers = {
   vencimentoHabilitacao: "Vencimento Habilitação"
 };
 
-const URL_CONDUCTORS = "https://api-deslocamento.herokuapp.com/api/v1/Condutor";
+const URL_CONDUCTORS =
+  "https://api-deslocamento.herokuapp.com/api/v1/Condutor/";
 
 function Conductors() {
   const {
@@ -36,10 +38,16 @@ function Conductors() {
   useEffect(() => {
     const fetchData = async () => {
       const data = await fetchApi(URL_CONDUCTORS);
-      setConductors(data);
+      return data;
     };
 
-    fetchData();
+    fetchData().then((data) => {
+      const conductors = data.map((conductor: ConductorData) => ({
+        ...conductor,
+        vencimentoHabilitacao: formatDate(conductor.vencimentoHabilitacao)
+      }));
+      setConductors(conductors);
+    });
     setSearchValue("");
     setTypeFilter("");
   }, [attTables]);
@@ -67,7 +75,7 @@ function Conductors() {
       setAttTables(!attTables);
     });
   };
-
+  console.log(conductors);
   return (
     <Box>
       <SearchBar filtros={headers} />

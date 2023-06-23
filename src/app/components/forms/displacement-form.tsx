@@ -1,19 +1,40 @@
-import { useContext, useState } from "react";
+"use client";
+
+import { useContext, useEffect, useState } from "react";
 
 import { MainContextData, myContext } from "@/context/MainContext";
 import { DisplacementsData } from "@/interfaces/types";
-import { postApi } from "@/utils/api";
-import { Box, TextField, Button } from "@mui/material";
+import {
+  fetchApi,
+  fetchDateTimeApi,
+  finishDisplacement,
+  postApi,
+  updateApi
+} from "@/utils/api";
+import {
+  Box,
+  TextField,
+  Button,
+  Select,
+  SelectChangeEvent
+} from "@mui/material";
+import FormControl from "@mui/material/FormControl";
+import InputLabel from "@mui/material/InputLabel";
+import MenuItem from "@mui/material/MenuItem";
+
+const URL_DISPLACEMENTS_INICIAR =
+  "https://api-deslocamento.herokuapp.com/api/v1/Deslocamento/IniciarDeslocamento/";
 
 const URL_DISPLACEMENTS =
   "https://api-deslocamento.herokuapp.com/api/v1/Deslocamento/";
 
-function DisplacementForm() {
+function DisplacementForm({ selectId }: { selectId: string }) {
   const [formData, setFormData] = useState<DisplacementsData>({
     id: 0,
     kmInicial: 0,
     kmFinal: 0,
     inicioDeslocamento: "",
+    fimDeslocamento: "",
     checkList: "",
     motivo: "",
     observacao: "",
@@ -22,12 +43,24 @@ function DisplacementForm() {
     idCliente: 0
   });
 
-  const { attTables, setAttTables } = useContext<MainContextData>(myContext);
+  const { attTables, setAttTables, clients, conductors, vehicles } =
+    useContext<MainContextData>(myContext);
+
+  useEffect(() => {
+    if (selectId !== "") {
+      const fetchData = async () => {
+        const data = await fetchApi(`${URL_DISPLACEMENTS}${selectId}`);
+        if (data) setFormData(data);
+      };
+      fetchData();
+    }
+  }, []);
 
   const handleChange = (
     event: React.ChangeEvent<{ name: string; value: unknown }>
   ) => {
     const { name, value } = event.target;
+    console.log(value);
     setFormData((prevData) => ({
       ...prevData,
       [name]: value
@@ -35,9 +68,36 @@ function DisplacementForm() {
   };
 
   const handlePost = async () => {
-    await postApi(URL_DISPLACEMENTS, formData).then(() => {
-      setAttTables(!attTables);
+    console.log("aqui");
+    console.log(formData);
+    fetchDateTimeApi().then(async (dateTime) => {
+      await postApi(URL_DISPLACEMENTS_INICIAR, {
+        ...formData,
+        inicioDeslocamento: dateTime
+      }).then(() => {
+        setAttTables(!attTables);
+      });
     });
+  };
+
+  const handlePut = async () => {
+    fetchDateTimeApi().then(async (dateTime) => {
+      await finishDisplacement(selectId, {
+        ...formData,
+        kmFinal: Number(formData.kmFinal),
+        fimDeslocamento: dateTime
+      }).then(() => {
+        setAttTables(!attTables);
+      });
+    });
+  };
+
+  const handleChangeSelect = (event: SelectChangeEvent<string>) => {
+    const { name, value } = event.target;
+    setFormData((prevData) => ({
+      ...prevData,
+      [name]: value
+    }));
   };
 
   return (
@@ -48,6 +108,7 @@ function DisplacementForm() {
         size="small"
         value={formData.kmInicial}
         onChange={handleChange}
+        style={selectId !== "" ? { display: "none" } : {}}
         fullWidth
         required
         type="number"
@@ -58,18 +119,10 @@ function DisplacementForm() {
         size="small"
         value={formData.kmFinal}
         onChange={handleChange}
+        style={selectId !== "" ? {} : { display: "none" }}
         fullWidth
         required
         type="number"
-      />
-      <TextField
-        label="Início Deslocamento"
-        name="inicioDeslocamento"
-        size="small"
-        value={formData.inicioDeslocamento}
-        onChange={handleChange}
-        fullWidth
-        required
       />
       <TextField
         label="Checklist"
@@ -77,6 +130,7 @@ function DisplacementForm() {
         size="small"
         value={formData.checkList}
         onChange={handleChange}
+        style={selectId !== "" ? { display: "none" } : {}}
         fullWidth
         required
       />
@@ -86,6 +140,7 @@ function DisplacementForm() {
         size="small"
         value={formData.motivo}
         onChange={handleChange}
+        style={selectId !== "" ? { display: "none" } : {}}
         fullWidth
         required
       />
@@ -98,38 +153,66 @@ function DisplacementForm() {
         fullWidth
         required
       />
-      <TextField
-        label="ID Condutor"
-        name="idCondutor"
+      <FormControl
         size="small"
-        value={formData.idCondutor}
-        onChange={handleChange}
-        fullWidth
-        required
-        type="number"
-      />
-      <TextField
-        label="ID Veículo"
-        name="idVeiculo"
+        style={selectId !== "" ? { display: "none" } : {}}
+      >
+        <InputLabel>Condutor</InputLabel>
+        <Select
+          label="Condutor"
+          name="idCondutor"
+          value={String(formData.idCondutor)}
+          onChange={handleChangeSelect}
+        >
+          {conductors.map((conductor) => (
+            <MenuItem key={conductor.id} value={conductor.id}>
+              {conductor.nome}
+            </MenuItem>
+          ))}
+        </Select>
+      </FormControl>
+      <FormControl
         size="small"
-        value={formData.idVeiculo}
-        onChange={handleChange}
-        fullWidth
-        required
-        type="number"
-      />
-      <TextField
-        label="ID Cliente"
-        name="idCliente"
+        style={selectId !== "" ? { display: "none" } : {}}
+      >
+        <InputLabel>Veiculo</InputLabel>
+        <Select
+          label="Veiculo"
+          name="idVeiculo"
+          value={String(formData.idVeiculo)}
+          onChange={handleChangeSelect}
+        >
+          {vehicles.map((vehicle) => (
+            <MenuItem key={vehicle.id} value={vehicle.id}>
+              {vehicle.marcaModelo}
+            </MenuItem>
+          ))}
+        </Select>
+      </FormControl>
+      <FormControl
         size="small"
-        value={formData.idCliente}
-        onChange={handleChange}
-        fullWidth
-        required
-        type="number"
-      />
-      <Button onClick={handlePost} variant="contained" color="primary">
-        Salvar
+        style={selectId !== "" ? { display: "none" } : {}}
+      >
+        <InputLabel>Cliente</InputLabel>
+        <Select
+          label="Cliente"
+          name="idCliente"
+          value={String(formData.idCliente)}
+          onChange={handleChangeSelect}
+        >
+          {clients.map((client) => (
+            <MenuItem key={client.id} value={client.id}>
+              {client.nome}
+            </MenuItem>
+          ))}
+        </Select>
+      </FormControl>
+      <Button
+        onClick={selectId !== "" ? handlePut : handlePost}
+        variant="contained"
+        color="primary"
+      >
+        {selectId !== "" ? "Atualizar" : "Salvar"}
       </Button>
     </Box>
   );

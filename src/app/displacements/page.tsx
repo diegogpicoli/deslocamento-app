@@ -4,6 +4,7 @@ import { useContext, useEffect, useState } from "react";
 
 import DisplacementForm from "../components/forms/displacement-form";
 import SearchBar from "../components/search-bar";
+import TableDisplacements from "../components/table-displacements";
 import TableInfo from "../components/table-info";
 
 import { MainContextData, myContext } from "@/context/MainContext";
@@ -15,14 +16,14 @@ const headers = {
   id: "ID",
   kmInicial: "Km Inicial",
   kmFinal: "Km Final",
-  inicioDeslocamento: "Inicio Deslocamento",
-  fimDeslocamento: "Fim do Descolamento",
+  inicioDeslocamento: "Data Inicial",
+  fimDeslocamento: "Data Final",
   checkList: "Check List",
   motivo: "Motivo",
   observacao: "Observação",
-  idCondutor: "Id Condutor",
-  idVeiculo: "Id Veiculo",
-  idCliente: "Id Cliente"
+  idCondutor: "Condutor",
+  idVeiculo: "Veiculo",
+  idCliente: "Cliente"
 };
 
 const URL_DISPLACEMENTS =
@@ -84,7 +85,7 @@ function Displacements() {
           justifyContent: "center"
         }}
       >
-        <TableInfo
+        <TableDisplacements
           deleteData={deleteDisplacements}
           headers={Object.values(headers)}
           Form={DisplacementForm}

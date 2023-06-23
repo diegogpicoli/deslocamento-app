@@ -137,10 +137,10 @@ function ClientForm({ selectId }: { selectId: string }) {
         fullWidth
         required
       />
-      <FormControl fullWidth required>
+      <FormControl size="small" fullWidth required>
         <InputLabel>UF</InputLabel>
         <Select
-          size="small"
+          label="UF"
           name="uf"
           value={formData.uf}
           onChange={handleChangeSelect}
