@@ -47,7 +47,7 @@ function NavBar() {
                 "&:hover": { borderBottom: "2px solid black" }
               }}
             >
-              Cliente
+              Clientes
             </Box>
           </Link>
           <Link href="/conductors" style={{ textDecoration: "none" }}>
@@ -58,7 +58,7 @@ function NavBar() {
                 "&:hover": { borderBottom: "2px solid black" }
               }}
             >
-              Condutor
+              Condutores
             </Box>
           </Link>
           <Link href="/displacements" style={{ textDecoration: "none" }}>
@@ -69,7 +69,7 @@ function NavBar() {
                 "&:hover": { borderBottom: "2px solid black" }
               }}
             >
-              Deslocamento
+              Deslocamentos
             </Box>
           </Link>
           <Link href="/vehicles" style={{ textDecoration: "none" }}>
@@ -80,7 +80,7 @@ function NavBar() {
                 "&:hover": { borderBottom: "2px solid black" }
               }}
             >
-              Veiculo
+              Veículos
             </Box>
           </Link>
         </Toolbar>

@@ -79,13 +79,13 @@ function TableInfo({ headers, data, Form, deleteData }: TableInfoProps) {
                 ))}
                 <TableCell>
                   <DeleteIcon
-                    style={{ cursor: "pointer" }}
+                    style={{ cursor: "pointer", color: "red" }}
                     onClick={() => deleteData(String(item.id))}
                   />
                 </TableCell>
                 <TableCell>
                   <EditIcon
-                    style={{ cursor: "pointer" }}
+                    style={{ cursor: "pointer", color: "blue" }}
                     onClick={() => handleOpenEdit(item.id)}
                   />
                 </TableCell>

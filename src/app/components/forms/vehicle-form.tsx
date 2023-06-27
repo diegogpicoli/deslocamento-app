@@ -86,7 +86,6 @@ function VehicleForm({
   };
 
   const handleFormSubmit = async () => {
-    console.log("teste");
     if (selectId !== "") {
       await handlePut();
       handleClose();

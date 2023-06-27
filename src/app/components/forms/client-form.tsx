@@ -112,7 +112,6 @@ function ClientForm({
   };
 
   const handlePut = async () => {
-    console.log(formData);
     await updateApi(selectId, URL_CLIENT, formData).then(() => {
       setAttTables(!attTables);
     });

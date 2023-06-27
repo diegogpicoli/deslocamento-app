@@ -35,7 +35,6 @@ const MyModal: React.FC<ModalProps> = ({
   };
 
   useEffect(() => {
-    console.log("teste");
     return () => {
       attSelectId();
     };
@@ -48,7 +47,9 @@ const MyModal: React.FC<ModalProps> = ({
 
   return (
     <Box>
-      <Button onClick={newModal}>Novo</Button>
+      <Button variant="contained" color="primary" onClick={newModal}>
+        Novo
+      </Button>
       <Modal
         open={open}
         onClose={handleClose}
