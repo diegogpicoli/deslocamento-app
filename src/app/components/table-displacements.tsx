@@ -167,7 +167,7 @@ function TableDisplacements({
               </TableCell>
               <TableCell className="MuiTableCell">
                 <DeleteIcon
-                  style={{ cursor: "pointer" }}
+                  style={{ cursor: "pointer", color: "red" }}
                   onClick={() => deleteData(String(displacement.id))}
                 />
               </TableCell>
