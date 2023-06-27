@@ -26,7 +26,7 @@ const MyModal: React.FC<ModalProps> = ({
     left: "50%",
     transform: "translate(-50%, -50%)",
     width: 600,
-    height: 500,
+    height: 550,
     bgcolor: "background.paper",
     border: "2px solid #000",
     boxShadow: 24,
@@ -56,7 +56,7 @@ const MyModal: React.FC<ModalProps> = ({
         aria-describedby="modal-modal-description"
       >
         <Box sx={style}>
-          <Form selectId={selectId} />
+          <Form handleClose={handleClose} selectId={selectId} />
         </Box>
       </Modal>
     </Box>

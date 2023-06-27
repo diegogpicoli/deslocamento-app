@@ -1,3 +1,5 @@
+import { Dayjs } from "dayjs";
+
 export interface ClientData {
   id: number;
   numeroDocumento: string;

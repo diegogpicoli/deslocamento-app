@@ -1,6 +1,7 @@
 "use client";
 
 import { useContext, useEffect, useState } from "react";
+import { useForm } from "react-hook-form";
 
 import { MainContextData, myContext } from "@/context/MainContext";
 import { DisplacementsData } from "@/interfaces/types";
@@ -8,9 +9,9 @@ import {
   fetchApi,
   fetchDateTimeApi,
   finishDisplacement,
-  postApi,
-  updateApi
+  postApi
 } from "@/utils/api";
+import { yupResolver } from "@hookform/resolvers/yup";
 import {
   Box,
   TextField,
@@ -21,6 +22,7 @@ import {
 import FormControl from "@mui/material/FormControl";
 import InputLabel from "@mui/material/InputLabel";
 import MenuItem from "@mui/material/MenuItem";
+import * as yup from "yup";
 
 const URL_DISPLACEMENTS_INICIAR =
   "https://api-deslocamento.herokuapp.com/api/v1/Deslocamento/IniciarDeslocamento/";
@@ -28,7 +30,47 @@ const URL_DISPLACEMENTS_INICIAR =
 const URL_DISPLACEMENTS =
   "https://api-deslocamento.herokuapp.com/api/v1/Deslocamento/";
 
-function DisplacementForm({ selectId }: { selectId: string }) {
+const schemaPost = yup.object().shape({
+  kmInicial: yup.number().required("A quilometragem inicial é obrigatória."),
+  kmFinal: yup
+    .number()
+    .required("A quilometragem final é obrigatória.")
+    .default(null),
+  checkList: yup.string().required("O checklist é obrigatório."),
+  motivo: yup.string().required("O motivo é obrigatório."),
+  observacao: yup
+    .string()
+    .required("A observação é obrigatória.")
+    .default(null),
+  idCondutor: yup
+    .number()
+    .positive()
+    .required("O ID do condutor é obrigatório."),
+  idVeiculo: yup.number().positive().required("O ID do veículo é obrigatório."),
+  idCliente: yup.number().positive().required("O ID do cliente é obrigatório.")
+});
+
+const schemaPut = yup.object().shape({
+  kmInicial: yup.number(),
+  kmFinal: yup
+    .number()
+    .positive()
+    .required("A quilometragem final é obrigatória."),
+  checkList: yup.string(),
+  motivo: yup.string(),
+  observacao: yup.string().required("A observação é obrigatória."),
+  idCondutor: yup.number(),
+  idVeiculo: yup.number(),
+  idCliente: yup.number()
+});
+
+function DisplacementForm({
+  selectId,
+  handleClose
+}: {
+  selectId: string;
+  handleClose: () => void;
+}) {
   const [formData, setFormData] = useState<DisplacementsData>({
     id: 0,
     kmInicial: 0,
@@ -43,6 +85,14 @@ function DisplacementForm({ selectId }: { selectId: string }) {
     idCliente: 0
   });
 
+  const {
+    register,
+    handleSubmit: onSubmit,
+    setValue
+  } = useForm({
+    resolver: yupResolver(selectId !== "" ? schemaPut : schemaPost)
+  });
+
   const { attTables, setAttTables, clients, conductors, vehicles } =
     useContext<MainContextData>(myContext);
 
@@ -51,6 +101,9 @@ function DisplacementForm({ selectId }: { selectId: string }) {
       const fetchData = async () => {
         const data = await fetchApi(`${URL_DISPLACEMENTS}${selectId}`);
         if (data) setFormData(data);
+        setValue("observacao", data.observacao, {
+          shouldValidate: true
+        });
       };
       fetchData();
     }
@@ -100,121 +153,130 @@ function DisplacementForm({ selectId }: { selectId: string }) {
     }));
   };
 
+  const handleFormSubmit = async () => {
+    if (selectId !== "") {
+      await handlePut();
+      handleClose();
+    } else {
+      await handlePost();
+      handleClose();
+    }
+  };
+
   return (
-    <Box sx={{ display: "flex", flexDirection: "column", gap: 2 }}>
-      <TextField
-        label="Km Inicial"
-        name="kmInicial"
-        size="small"
-        value={formData.kmInicial}
-        onChange={handleChange}
-        style={selectId !== "" ? { display: "none" } : {}}
-        fullWidth
-        required
-        type="number"
-      />
-      <TextField
-        label="Km Final"
-        name="kmFinal"
-        size="small"
-        value={formData.kmFinal}
-        onChange={handleChange}
-        style={selectId !== "" ? {} : { display: "none" }}
-        fullWidth
-        required
-        type="number"
-      />
-      <TextField
-        label="Checklist"
-        name="checkList"
-        size="small"
-        value={formData.checkList}
-        onChange={handleChange}
-        style={selectId !== "" ? { display: "none" } : {}}
-        fullWidth
-        required
-      />
-      <TextField
-        label="Motivo"
-        name="motivo"
-        size="small"
-        value={formData.motivo}
-        onChange={handleChange}
-        style={selectId !== "" ? { display: "none" } : {}}
-        fullWidth
-        required
-      />
-      <TextField
-        label="Observação"
-        name="observacao"
-        size="small"
-        value={formData.observacao}
-        onChange={handleChange}
-        fullWidth
-        required
-      />
-      <FormControl
-        size="small"
-        style={selectId !== "" ? { display: "none" } : {}}
-      >
-        <InputLabel>Condutor</InputLabel>
-        <Select
-          label="Condutor"
-          name="idCondutor"
-          value={String(formData.idCondutor)}
-          onChange={handleChangeSelect}
+    <form onSubmit={onSubmit(handleFormSubmit)}>
+      <Box sx={{ display: "flex", flexDirection: "column", gap: 2 }}>
+        <TextField
+          label="Km Inicial"
+          {...register("kmInicial")}
+          size="small"
+          value={formData.kmInicial}
+          onChange={handleChange}
+          style={selectId !== "" ? { display: "none" } : {}}
+          fullWidth
+          required
+          type="number"
+        />
+        <TextField
+          label="Km Final"
+          {...register("kmFinal")}
+          size="small"
+          value={formData.kmFinal}
+          onChange={handleChange}
+          style={selectId !== "" ? {} : { display: "none" }}
+          fullWidth
+          required
+          type="number"
+        />
+        <TextField
+          label="Checklist"
+          {...register("checkList")}
+          size="small"
+          value={formData.checkList}
+          onChange={handleChange}
+          style={selectId !== "" ? { display: "none" } : {}}
+          fullWidth
+          required
+        />
+        <TextField
+          label="Motivo"
+          {...register("motivo")}
+          size="small"
+          value={formData.motivo}
+          onChange={handleChange}
+          style={selectId !== "" ? { display: "none" } : {}}
+          fullWidth
+          required
+        />
+        <TextField
+          label="Observação"
+          {...register("observacao")}
+          size="small"
+          value={formData.observacao}
+          onChange={handleChange}
+          fullWidth
+          required
+        />
+        <FormControl
+          size="small"
+          style={selectId !== "" ? { display: "none" } : {}}
         >
-          {conductors.map((conductor) => (
-            <MenuItem key={conductor.id} value={conductor.id}>
-              {conductor.nome}
-            </MenuItem>
-          ))}
-        </Select>
-      </FormControl>
-      <FormControl
-        size="small"
-        style={selectId !== "" ? { display: "none" } : {}}
-      >
-        <InputLabel>Veiculo</InputLabel>
-        <Select
-          label="Veiculo"
-          name="idVeiculo"
-          value={String(formData.idVeiculo)}
-          onChange={handleChangeSelect}
+          <InputLabel>Condutor</InputLabel>
+          <Select
+            label="Condutor"
+            {...register("idCondutor")}
+            value={String(formData.idCondutor)}
+            onChange={handleChangeSelect}
+          >
+            {conductors.map((conductor) => (
+              <MenuItem key={conductor.id} value={conductor.id}>
+                {conductor.nome}
+              </MenuItem>
+            ))}
+          </Select>
+        </FormControl>
+        <FormControl
+          size="small"
+          style={selectId !== "" ? { display: "none" } : {}}
         >
-          {vehicles.map((vehicle) => (
-            <MenuItem key={vehicle.id} value={vehicle.id}>
-              {vehicle.marcaModelo}
-            </MenuItem>
-          ))}
-        </Select>
-      </FormControl>
-      <FormControl
-        size="small"
-        style={selectId !== "" ? { display: "none" } : {}}
-      >
-        <InputLabel>Cliente</InputLabel>
-        <Select
-          label="Cliente"
-          name="idCliente"
-          value={String(formData.idCliente)}
-          onChange={handleChangeSelect}
+          <InputLabel>Veiculo</InputLabel>
+          <Select
+            label="Veiculo"
+            {...register("idVeiculo")}
+            value={String(formData.idVeiculo)}
+            onChange={handleChangeSelect}
+          >
+            {vehicles.map((vehicle) => (
+              <MenuItem key={vehicle.id} value={vehicle.id}>
+                {vehicle.marcaModelo}
+              </MenuItem>
+            ))}
+          </Select>
+        </FormControl>
+        <FormControl
+          size="small"
+          style={selectId !== "" ? { display: "none" } : {}}
         >
-          {clients.map((client) => (
-            <MenuItem key={client.id} value={client.id}>
-              {client.nome}
-            </MenuItem>
-          ))}
-        </Select>
-      </FormControl>
-      <Button
-        onClick={selectId !== "" ? handlePut : handlePost}
-        variant="contained"
-        color="primary"
-      >
-        {selectId !== "" ? "Atualizar" : "Salvar"}
-      </Button>
-    </Box>
+          <InputLabel>Cliente</InputLabel>
+          <Select
+            label="Cliente"
+            {...register("idCliente")}
+            value={String(formData.idCliente)}
+            onChange={handleChangeSelect}
+          >
+            {clients.map((client) => (
+              <MenuItem key={client.id} value={client.id}>
+                {client.nome}
+              </MenuItem>
+            ))}
+          </Select>
+        </FormControl>
+        <Button variant="contained" color="primary" type="submit">
+          {selectId !== "" ? "Atualizar" : "Salvar"}
+        </Button>
+      </Box>
+    </form>
   );
 }
+
 export default DisplacementForm;
