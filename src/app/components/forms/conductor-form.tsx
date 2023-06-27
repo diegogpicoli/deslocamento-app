@@ -90,7 +90,6 @@ function ConductorForm({
   };
 
   const handlePost = async () => {
-    console.log(formData);
     await postApi(URL_CONDUCTORS, formData).then(() => {
       setAttTables(!attTables);
     });
@@ -98,7 +97,6 @@ function ConductorForm({
 
   const handlePut = async () => {
     delete formData.catergoriaHabilitacao;
-    console.log(formData);
     await updateApi(selectId, URL_CONDUCTORS, {
       ...formData
     }).then(() => {
@@ -115,7 +113,6 @@ function ConductorForm({
       handleClose();
     }
   };
-  console.log(oldDate);
   return (
     <form onSubmit={onSubmit(handleSubmit)}>
       <Box sx={{ display: "flex", flexDirection: "column", gap: 2 }}>

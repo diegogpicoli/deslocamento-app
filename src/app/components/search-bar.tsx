@@ -45,7 +45,12 @@ function SearchBar({ filtros }: { filtros: Record<string, string> }) {
         size="small"
         label="Pesquisar"
       />
-      <Button onClick={() => setSearchValue(value)} type="submit">
+      <Button
+        variant="contained"
+        color="primary"
+        onClick={() => setSearchValue(value)}
+        type="submit"
+      >
         Buscar
       </Button>
     </Box>

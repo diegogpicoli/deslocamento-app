@@ -23,7 +23,7 @@ export default function Home() {
           <img
             src={item.imageUrl}
             alt={item.name}
-            style={{ width: "100%", height: "100%", objectFit: "cover" }}
+            style={{ width: "100%", height: "80vh", objectFit: "cover" }}
           />
         </Paper>
       ))}

@@ -75,7 +75,6 @@ function Conductors() {
       setAttTables(!attTables);
     });
   };
-  console.log(conductors);
   return (
     <Box>
       <SearchBar filtros={headers} />

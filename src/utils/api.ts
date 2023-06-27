@@ -40,9 +40,6 @@ export const updateApi = async (
   url: string,
   formData: ClientData | ConductorData | VehiclesData | DisplacementsData
 ) => {
-  console.log(id);
-  console.log(url);
-  console.log(formData);
   try {
     const response = await axios.put(`${url}${id}`, formData, {
       headers: {
@@ -63,8 +60,6 @@ export const finishDisplacement = async (
   id: string,
   formData: ClientData | ConductorData | VehiclesData | DisplacementsData
 ) => {
-  console.log(id);
-  console.log(formData);
   try {
     const response = await axios.put(
       `https://api-deslocamento.herokuapp.com/api/v1/Deslocamento/${id}/EncerrarDeslocamento`,

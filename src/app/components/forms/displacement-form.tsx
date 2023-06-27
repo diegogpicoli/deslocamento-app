@@ -113,7 +113,6 @@ function DisplacementForm({
     event: React.ChangeEvent<{ name: string; value: unknown }>
   ) => {
     const { name, value } = event.target;
-    console.log(value);
     setFormData((prevData) => ({
       ...prevData,
       [name]: value
@@ -121,8 +120,6 @@ function DisplacementForm({
   };
 
   const handlePost = async () => {
-    console.log("aqui");
-    console.log(formData);
     fetchDateTimeApi().then(async (dateTime) => {
       await postApi(URL_DISPLACEMENTS_INICIAR, {
         ...formData,
