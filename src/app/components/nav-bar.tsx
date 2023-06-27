@@ -16,7 +16,15 @@ function NavBar() {
         justifyContent: "center"
       }}
     >
-      <AppBar sx={{ maxWidth: "1400px" }} position="static">
+      <AppBar
+        sx={{
+          backgroundColor: "white",
+          height: "100px",
+          display: "flex",
+          justifyContent: "center"
+        }}
+        position="static"
+      >
         <Toolbar
           sx={{
             justifyContent: "space-between"
@@ -31,17 +39,49 @@ function NavBar() {
               />
             </Link>
           </Typography>
-          <Link href="/clients">
-            <Button color="inherit">Cliente</Button>
+          <Link href="/clients" style={{ textDecoration: "none" }}>
+            <Box
+              color="inherit"
+              sx={{
+                borderBottom: "2px solid transparent",
+                "&:hover": { borderBottom: "2px solid black" }
+              }}
+            >
+              Cliente
+            </Box>
           </Link>
-          <Link href="/conductors">
-            <Button color="inherit">Condutor</Button>
+          <Link href="/conductors" style={{ textDecoration: "none" }}>
+            <Box
+              color="inherit"
+              sx={{
+                borderBottom: "2px solid transparent",
+                "&:hover": { borderBottom: "2px solid black" }
+              }}
+            >
+              Condutor
+            </Box>
           </Link>
-          <Link href="/displacements">
-            <Button color="inherit">Deslocamento</Button>
+          <Link href="/displacements" style={{ textDecoration: "none" }}>
+            <Box
+              color="inherit"
+              sx={{
+                borderBottom: "2px solid transparent",
+                "&:hover": { borderBottom: "2px solid black" }
+              }}
+            >
+              Deslocamento
+            </Box>
           </Link>
-          <Link href="/vehicles">
-            <Button color="inherit">Veiculo</Button>
+          <Link href="/vehicles" style={{ textDecoration: "none" }}>
+            <Box
+              color="inherit"
+              sx={{
+                borderBottom: "2px solid transparent",
+                "&:hover": { borderBottom: "2px solid black" }
+              }}
+            >
+              Veiculo
+            </Box>
           </Link>
         </Toolbar>
       </AppBar>
