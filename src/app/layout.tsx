@@ -1,3 +1,4 @@
+import dynamic from "next/dynamic";
 import { Inter } from "next/font/google";
 
 import NavBar from "./components/nav-bar";
@@ -11,6 +12,13 @@ export const metadata = {
   description: "Aplicativo de gerenciamento de veículos"
 };
 
+const TodoProvider = dynamic(
+  () => import("@/context/MainContext").then((ctx) => ctx.default),
+  {
+    ssr: false
+  }
+);
+
 export default function RootLayout({
   children
 }: {
@@ -20,8 +28,10 @@ export default function RootLayout({
     <html lang="pt-br">
       <ThemeStyle>
         <body className={inter.className}>
-          <NavBar />
-          {children}
+          <TodoProvider>
+            <NavBar />
+            {children}
+          </TodoProvider>
         </body>
       </ThemeStyle>
     </html>

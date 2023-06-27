@@ -5,7 +5,7 @@ import { createTheme } from "@mui/material/styles";
 function ThemeStyle({ children }: { children: React.ReactNode }) {
   const darkTheme = createTheme({
     palette: {
-      mode: "light",
+      mode: "dark",
       primary: {
         main: "#6636d7",
         light: "#ff9999",
